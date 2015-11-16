@@ -32,6 +32,7 @@ void print_usage(FILE *stream, int exit_code) {
     fprintf(stream, "-h,   --help                        Display this usage information.\n");
     fprintf(stream, "-d,   --dir                         Directory with the ENT files\n");
     fprintf(stream, "-o,   --output                      Output file\n");
+    fprintf(stream, "-s,   --sum                         Sum file for checking\n");
     fprintf(stream, "********************************************************************************\n");
     fprintf(stream, "\n            Roberto Vera Alvarez (e-mail: r78v10a07@gmail.com)\n\n");
     fprintf(stream, "********************************************************************************\n");
@@ -40,7 +41,7 @@ void print_usage(FILE *stream, int exit_code) {
 
 int main(int argc, char** argv) {
     int next_option, verbose;
-    const char* const short_options = "vhd:o:";
+    const char* const short_options = "vhd:o:s:";
     FILE *s;
     char *line = NULL;
     size_t len = 0;
@@ -59,18 +60,20 @@ int main(int argc, char** argv) {
     double cllSum, nbcSum;
     int cllLen, nbcLen;
     FILE *outFile = NULL;
+    FILE *sumFile = NULL;
     char *dir = NULL;
-    
+
     program_name = argv[0];
-    
+
     const struct option long_options[] = {
         { "help", 0, NULL, 'h'},
         { "verbose", 0, NULL, 'v'},
         { "output", 1, NULL, 'o'},
         { "dir", 1, NULL, 'd'},
+        { "sum", 1, NULL, 's'},
         { NULL, 0, NULL, 0} /* Required at end of array.  */
     };
-    
+
     verbose = 0;
     do {
         next_option = getopt_long(argc, argv, short_options, long_options, NULL);
@@ -86,13 +89,17 @@ int main(int argc, char** argv) {
             case 'd':
                 dir = strdup(optarg);
                 break;
-                
+
             case 'o':
                 outFile = checkPointerError(fopen(optarg, "w"), "Can't open OUTPUT file", __FILE__, __LINE__, -1);
                 break;
+
+            case 's':
+                sumFile = checkPointerError(fopen(optarg, "w"), "Can't open SUM file", __FILE__, __LINE__, -1);
+                break;
         }
     } while (next_option != -1);
-    if (!dir || ! outFile){
+    if (!dir || !outFile || !sumFile) {
         print_usage(stderr, -1);
     }
 
@@ -196,7 +203,7 @@ int main(int argc, char** argv) {
     BtreeRecordsToArray(&genesArray, &genesLen, genes);
     for (i = 0; i < genesLen; i++) {
         for (l = 0; l < ((MGene_l) genesArray[i])->entitiesLen; l++) {
-            fprintf(outFile, "%s\t%s\t%d", ((MGene_l) genesArray[i])->geneId, ((MGene_l) genesArray[i])->transcriptId, l + 1);            
+            fprintf(outFile, "%s\t%s\t%d", ((MGene_l) genesArray[i])->geneId, ((MGene_l) genesArray[i])->transcriptId, l + 1);
             cllSum = nbcSum = 0.0;
             cllLen = nbcLen = 0;
             for (k = 0; k < samplesLen; k++) {
@@ -210,8 +217,20 @@ int main(int argc, char** argv) {
                 }
                 fprintf(outFile, "\t%.4f\t%d", ((MGene_l) genesArray[i])->entities[l].samples[k].TPM, ((MGene_l) genesArray[i])->entities[l].samples[k].count);
             }
-            fprintf(outFile, "\t%.4f\t%.4f\n",cllSum/cllLen, nbcSum/nbcLen);
+            fprintf(outFile, "\t%.4f\t%.4f\n", cllSum / cllLen, nbcSum / nbcLen);
         }
+    }
+
+    for (k = 0; k < samplesLen; k++) {
+        cllSum = 0.0;
+        for (i = 0; i < genesLen; i++) {
+            for (l = 0; l < ((MGene_l) genesArray[i])->entitiesLen; l++) {
+                if (((MGene_l) genesArray[i])->entities[l].samples[k].TPM != INFINITY) {
+                    cllSum += ((MGene_l) genesArray[i])->entities[l].samples[k].TPM;
+                }
+            }
+        }
+        fprintf(sumFile, "%s\t%.4f\n", samples[k], cllSum);
     }
 
     free(dir);
@@ -220,6 +239,7 @@ int main(int argc, char** argv) {
     freeArrayofPointers((void **) samples, samplesLen);
     if (line) free(line);
     fclose(outFile);
+    fclose(sumFile);
     return (EXIT_SUCCESS);
 }
 
