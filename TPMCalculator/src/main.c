@@ -35,7 +35,7 @@ void print_usage(FILE *stream, int exit_code) {
     fprintf(stream, "********************************************************************************\n");
     fprintf(stream, "\n            Roberto Vera Alvarez (e-mail: r78v10a07@gmail.com)\n\n");
     fprintf(stream, "********************************************************************************\n");
-    exit(0);
+    exit(exit_code);
 }
 
 /*
