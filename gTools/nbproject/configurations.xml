@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="95">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true">
+      <itemPath>include/bmemory.h</itemPath>
+      <itemPath>include/bstring.h</itemPath>
+      <itemPath>include/btree.h</itemPath>
+      <itemPath>include/chrentity.h</itemPath>
+      <itemPath>include/chromosome.h</itemPath>
+      <itemPath>include/gene.h</itemPath>
+      <itemPath>include/sam.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Resource Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+      <itemPath>src/berror.c</itemPath>
+      <itemPath>src/bmemory.c</itemPath>
+      <itemPath>src/bstring.c</itemPath>
+      <itemPath>src/btree.c</itemPath>
+      <itemPath>src/chrentity.c</itemPath>
+      <itemPath>src/chromosome.c</itemPath>
+      <itemPath>src/gene.c</itemPath>
+      <itemPath>src/sam.c</itemPath>
+    </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Release" type="3">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+          <incDir>
+            <pElem>include</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+        <archiverTool>
+          <output>${CND_DISTDIR}/${CND_CONF}/libgtools.a</output>
+        </archiverTool>
+      </compileType>
+      <packaging>
+        <packType>Tar</packType>
+        <output>${CND_DISTDIR}/${CND_CONF}/package/liblocator.dylib.tar</output>
+        <packFileList>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}lib/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="644"
+                            owner="root"
+                            group="bin"/>
+        </packFileList>
+      </packaging>
+      <item path="src/berror.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/bmemory.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/bstring.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/btree.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/chrentity.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/chromosome.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/gene.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/sam.c" ex="false" tool="0" flavor2="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>
