@@ -30,6 +30,21 @@ extern "C" {
         char *chr;
         MEntity_t *entities;
         int entitiesLen;
+        int length;
+        int CLLexonCount;
+        int CLLintronCount;
+        int CLLTMPCount;
+        double *CLLIntronExonRatio;
+        double CLLTPM;
+        double CLLTPMExon;
+        double CLLTPMIntron;
+        int NBCexonCount;
+        int NBCintronCount;
+        int NBCTMPCount;
+        double *NBCIntronExonRatio;
+        double NBCTPM;
+        double NBCTPMExon;
+        double NBCTPMIntron;
     } MGene_t;
 
     typedef MGene_t *MGene_l;
@@ -38,6 +53,8 @@ extern "C" {
     extern int GeneKeyCMP(void *key1, void *key2);
     extern void FreeMGene(void * self);
     extern MGene_l NewMGene(char **fields);
+    extern double log2(const double x);
+    extern double HausdorffDistance(double *s1, int s1Len, double *s2, int s2Len);
 
 
 #ifdef	__cplusplus

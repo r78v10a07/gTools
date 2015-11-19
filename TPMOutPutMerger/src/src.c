@@ -50,6 +50,8 @@ void FreeMGene(void * self) {
         }
         free(((MGene_l) self)->entities);
     }
+    if (((MGene_l) self)->CLLIntronExonRatio) free(((MGene_l) self)->CLLIntronExonRatio);
+    if (((MGene_l) self)->NBCIntronExonRatio) free(((MGene_l) self)->NBCIntronExonRatio);
     free(((MGene_l) self));
 }
 
@@ -61,6 +63,25 @@ MGene_l NewMGene(char **fields) {
     gene->chr = strdup(fields[2]);
     gene->entities = NULL;
     gene->entitiesLen = 0;
+    gene->length = -1;
+    gene->CLLTPM = 0.0;
+    gene->CLLTPMExon = 0.0;
+    gene->CLLTPMIntron = 0.0;
+    gene->CLLTMPCount = 0;
+    gene->CLLexonCount = 0;
+    gene->CLLintronCount = 0;
+    gene->NBCTPM = 0.0;
+    gene->NBCTPMExon = 0.0;
+    gene->NBCTPMIntron = 0.0;
+    gene->NBCTMPCount = 0;
+    gene->NBCexonCount = 0;
+    gene->NBCintronCount = 0;
+    gene->CLLIntronExonRatio = NULL;
+    gene->NBCIntronExonRatio = NULL;
 
     return gene;
+}
+
+double log2(const double x){
+    return  log(x) * M_LOG2E;
 }

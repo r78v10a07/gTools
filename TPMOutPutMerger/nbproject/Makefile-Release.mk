@@ -35,12 +35,13 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/src/hausdorff_distance.o \
 	${OBJECTDIR}/src/main.o \
 	${OBJECTDIR}/src/src.o
 
 
 # C Compiler Flags
-CFLAGS=
+CFLAGS=-g
 
 # CC Compiler Flags
 CCFLAGS=
@@ -62,6 +63,11 @@ LDLIBSOPTIONS=-L../gTools/dist/Release
 ${CND_DISTDIR}/${CND_CONF}/TPMOutPutMerger: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}
 	${LINK.c} -o ${CND_DISTDIR}/${CND_CONF}/TPMOutPutMerger ${OBJECTFILES} ${LDLIBSOPTIONS} -lgtools -lm
+
+${OBJECTDIR}/src/hausdorff_distance.o: src/hausdorff_distance.c 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} "$@.d"
+	$(COMPILE.c) -O2 -I../gTools/include -Iinclude -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/hausdorff_distance.o src/hausdorff_distance.c
 
 ${OBJECTDIR}/src/main.o: src/main.c 
 	${MKDIR} -p ${OBJECTDIR}/src
