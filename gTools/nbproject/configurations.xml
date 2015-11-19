@@ -54,6 +54,7 @@
           <incDir>
             <pElem>include</pElem>
           </incDir>
+          <commandLine>-g</commandLine>
         </cTool>
         <ccTool>
           <developmentMode>5</developmentMode>
