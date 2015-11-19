@@ -1,6 +1,6 @@
 # gTools
 
-This code was developed by Roberto Vera Alvarez<r78v10a07@gmail.com> to calculate 
+This code was developed by Roberto Vera Alvarez (r78v10a07@gmail.com) to calculate 
 the TPM values for introns and exons from a SAM files and a GTF file.
 
 The program was tested using genes.gtf file from hg19 (UCSC).  
