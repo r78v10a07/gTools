@@ -45,6 +45,10 @@ extern "C" {
         double NBCTPM;
         double NBCTPMExon;
         double NBCTPMIntron;
+        double *repExonTPM;
+        int *repExonCount;
+        double *repIntronTPM;
+        int *repIntronCount;
     } MGene_t;
 
     typedef MGene_t *MGene_l;

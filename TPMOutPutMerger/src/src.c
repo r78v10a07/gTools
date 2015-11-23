@@ -52,6 +52,10 @@ void FreeMGene(void * self) {
     }
     if (((MGene_l) self)->CLLIntronExonRatio) free(((MGene_l) self)->CLLIntronExonRatio);
     if (((MGene_l) self)->NBCIntronExonRatio) free(((MGene_l) self)->NBCIntronExonRatio);
+    if (((MGene_l) self)->repExonCount) free(((MGene_l) self)->repExonCount);
+    if (((MGene_l) self)->repExonTPM) free(((MGene_l) self)->repExonTPM);
+    if (((MGene_l) self)->repIntronCount) free(((MGene_l) self)->repIntronCount);
+    if (((MGene_l) self)->repIntronTPM) free(((MGene_l) self)->repIntronTPM);
     free(((MGene_l) self));
 }
 
@@ -78,6 +82,10 @@ MGene_l NewMGene(char **fields) {
     gene->NBCintronCount = 0;
     gene->CLLIntronExonRatio = NULL;
     gene->NBCIntronExonRatio = NULL;
+    gene->repExonCount = NULL;
+    gene->repExonTPM = NULL;
+    gene->repIntronCount = NULL;
+    gene->repIntronTPM = NULL;
 
     return gene;
 }

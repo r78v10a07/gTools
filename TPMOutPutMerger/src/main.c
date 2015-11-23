@@ -30,10 +30,11 @@ void print_usage(FILE *stream, int exit_code) {
     fprintf(stream, "\n\n%s options:\n\n", program_name);
     fprintf(stream, "-v,   --verbose                     Print info\n");
     fprintf(stream, "-h,   --help                        Display this usage information.\n");
-    fprintf(stream, "-d,   --dir                         Directory with the ENT files\n");
+    fprintf(stream, "-d,   --dir                         Directory with the ENT and OUT files\n");
     fprintf(stream, "-o,   --output                      Output file\n");
     fprintf(stream, "-g,   --gene                        Gene average output file\n");
     fprintf(stream, "-s,   --sum                         Sum file for checking\n");
+    fprintf(stream, "-r,   --rep                         File for printing TPM values for gene for replicates\n");
     fprintf(stream, "********************************************************************************\n");
     fprintf(stream, "\n            Roberto Vera Alvarez (e-mail: r78v10a07@gmail.com)\n\n");
     fprintf(stream, "********************************************************************************\n");
@@ -42,7 +43,7 @@ void print_usage(FILE *stream, int exit_code) {
 
 int main(int argc, char** argv) {
     int next_option, verbose;
-    const char* const short_options = "vhd:o:s:g:";
+    const char* const short_options = "vhd:o:s:g:r:";
     FILE *s;
     char *line = NULL;
     size_t len = 0;
@@ -64,6 +65,7 @@ int main(int argc, char** argv) {
     FILE *outFile = NULL;
     FILE *geneFile = NULL;
     FILE *sumFile = NULL;
+    FILE *repFile = NULL;
     char *dir = NULL;
     int s1Len;
     int s2Len;
@@ -77,6 +79,7 @@ int main(int argc, char** argv) {
         { "dir", 1, NULL, 'd'},
         { "gene", 1, NULL, 'g'},
         { "sum", 1, NULL, 's'},
+        { "rep", 1, NULL, 'r'},
         { NULL, 0, NULL, 0} /* Required at end of array.  */
     };
 
@@ -107,6 +110,10 @@ int main(int argc, char** argv) {
             case 's':
                 sumFile = checkPointerError(fopen(optarg, "w"), "Can't open SUM file", __FILE__, __LINE__, -1);
                 break;
+
+            case 'r':
+                repFile = checkPointerError(fopen(optarg, "w"), "Can't open replicate file", __FILE__, __LINE__, -1);
+                break;
         }
     } while (next_option != -1);
     if (!dir || !outFile || !sumFile) {
@@ -115,6 +122,7 @@ int main(int argc, char** argv) {
 
     fprintf(geneFile, "GeneId\tTranscriptId\tNBC_Gene_TPM\tNBC_Exon_TPM\tNBC_Intron_TPM\tNBC_Intron_Exon_Ratio\tNBC_LOG2_Intron_Exon_Ratio\tCLL_Gene_TPM\tCLL_Exon_TPM\tCLL_Intron_TPM\tCLL_Intron_Exon_Ratio\tCLL_LOG2_Intron_Exon_Ratio\tHausdorff_distance\tCLL_NBC_Intron_Ratio\tLOG2_CLL_NBC_Intron_Ratio\tCLL_NBC_Exon_Ratio\tLOG2_CLL_NBC_Exon_Ratio\n");
     fprintf(outFile, "GeneId\tTranscriptId\tIntron_Exon_Number\tType");
+    fprintf(repFile, "GeneId\tTranscriptId");
 
     cllLen = nbcLen = samplesLen = 0;
     n = scandir(dir, &namelist, 0, alphasort);
@@ -143,6 +151,7 @@ int main(int argc, char** argv) {
         s = checkPointerError(fopen(samples[i], "r"), "Can't open sample ENT file", __FILE__, __LINE__, -1);
         *(strstr(samples[i], ".ent")) = '\0';
         fprintf(outFile, "\t%s\t%s_Reads", samples[i], samples[i]);
+        fprintf(repFile, "\t%s_Exon\t%s_Exon_Reads\t%s_Intron\t%s_Intron_Reads", samples[i], samples[i], samples[i], samples[i]);
         if (verbose) printf("Parsing ENT file: %s\n", samples[i]);
 
         while ((read = getline(&line, &len, s)) != -1) {
@@ -163,6 +172,26 @@ int main(int argc, char** argv) {
                         for (k = 0; k < cllLen; k++) {
                             gene->CLLIntronExonRatio[k] = NAN;
                         }
+
+                        gene->repExonTPM = allocate(sizeof (double) * samplesLen, __FILE__, __LINE__);
+                        for (k = 0; k < samplesLen; k++) {
+                            gene->repExonTPM[k] = NAN;
+                        }
+                        gene->repExonCount = allocate(sizeof (int) * samplesLen, __FILE__, __LINE__);
+                        for (k = 0; k < samplesLen; k++) {
+                            gene->repExonCount[k] = NAN;
+                        }
+
+                        gene->repIntronTPM = allocate(sizeof (double) * samplesLen, __FILE__, __LINE__);
+                        for (k = 0; k < samplesLen; k++) {
+                            gene->repIntronTPM[k] = NAN;
+                        }
+
+                        gene->repIntronCount = allocate(sizeof (int) * samplesLen, __FILE__, __LINE__);
+                        for (k = 0; k < samplesLen; k++) {
+                            gene->repIntronCount[k] = NAN;
+                        }
+
                         gene->entities[gene->entitiesLen].samples = allocate(sizeof (MEntitySample_t) * (samplesLen), __FILE__, __LINE__);
                         for (k = 0; k < samplesLen; k++) {
                             gene->entities[gene->entitiesLen].samples[k].sample = samples[k];
@@ -208,6 +237,7 @@ int main(int argc, char** argv) {
     }
 
     fprintf(outFile, "\tCLL_Mean\tNBC_Mean\tCLL_NBC_Mean_Diff\n");
+    fprintf(repFile, "\n");
 
     s1Len = s2Len = 0;
     for (i = 0; i < samplesLen; i++) {
@@ -245,8 +275,14 @@ int main(int argc, char** argv) {
                         }
                     }
 
+                    tmpValue = strtod(fields[7], NULL);
+                    if (!isnan(tmpValue) && !isinf(tmpValue)) {
+                        gene->repExonCount[i] = tmpValue;
+                    }
+
                     tmpValue = strtod(fields[8], NULL);
                     if (!isnan(tmpValue) && !isinf(tmpValue)) {
+                        gene->repExonTPM[i] = tmpValue;
                         if (strncmp(samples[i], "CLL", 3) == 0) {
                             gene->CLLTPMExon += tmpValue;
                             gene->CLLexonCount++;
@@ -256,8 +292,14 @@ int main(int argc, char** argv) {
                         }
                     }
 
+                    tmpValue = strtod(fields[10], NULL);
+                    if (!isnan(tmpValue) && !isinf(tmpValue)) {
+                        gene->repIntronCount[i] = tmpValue;
+                    }
+
                     tmp1Value = strtod(fields[11], NULL);
                     if (!isnan(tmp1Value) && !isinf(tmp1Value)) {
+                        gene->repIntronTPM[i] = tmp1Value;
                         if (strncmp(samples[i], "CLL", 3) == 0) {
                             gene->CLLTPMIntron += tmp1Value;
                             gene->CLLintronCount++;
@@ -303,10 +345,10 @@ int main(int argc, char** argv) {
                 tmpValue / cllSum,
                 log2(tmpValue / cllSum),
                 HausdorffDistance(((MGene_l) genesArray[i])->CLLIntronExonRatio, cllLen, ((MGene_l) genesArray[i])->NBCIntronExonRatio, nbcLen),
-                tmp1Value/tmpValue,
-                log2(tmp1Value/tmpValue),
-                cllSum/nbcSum,
-                log2(cllSum/nbcSum));
+                tmp1Value / tmpValue,
+                log2(tmp1Value / tmpValue),
+                cllSum / nbcSum,
+                log2(cllSum / nbcSum));
 
         for (l = 0; l < ((MGene_l) genesArray[i])->entitiesLen; l++) {
             fprintf(outFile, "%s\t%s\t%d", ((MGene_l) genesArray[i])->geneId, ((MGene_l) genesArray[i])->transcriptId, l + 1);
@@ -325,6 +367,7 @@ int main(int argc, char** argv) {
                     fprintf(outFile, "\t%s", ((MGene_l) genesArray[i])->entities[l].type);
                 }
                 fprintf(outFile, "\t%.4f\t%d", ((MGene_l) genesArray[i])->entities[l].samples[k].TPM, ((MGene_l) genesArray[i])->entities[l].samples[k].count);
+
             }
             cllSum = cllSum / cllLenTMP;
             nbcSum = nbcSum / nbcLenTMP;
@@ -335,6 +378,13 @@ int main(int argc, char** argv) {
                 fprintf(outFile, "%.4f\n", cllSum - nbcSum);
             }
         }
+
+        fprintf(repFile, "%s\t%s", ((MGene_l) genesArray[i])->geneId, ((MGene_l) genesArray[i])->transcriptId);
+        for (k = 0; k < samplesLen; k++) {
+            fprintf(repFile, "\t%.4f\t%d\t%.4f\t%d", ((MGene_l) genesArray[i])->repExonTPM[k], ((MGene_l) genesArray[i])->repExonCount[k],
+                    ((MGene_l) genesArray[i])->repIntronTPM[k], ((MGene_l) genesArray[i])->repIntronCount[k]);
+        }
+        fprintf(repFile, "\n");
     }
 
     for (k = 0; k < samplesLen; k++) {
@@ -357,6 +407,7 @@ int main(int argc, char** argv) {
     fclose(outFile);
     fclose(geneFile);
     fclose(sumFile);
+    fclose(repFile);
     return (EXIT_SUCCESS);
 }
 
