@@ -19,7 +19,7 @@ Install:
 
 For GNU/Linux and MAC OSX with Makefile installed.
 
-Type make for compilation.
+Type make for compilation and make test for testing the library
 
 Files:
 
