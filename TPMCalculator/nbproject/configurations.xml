@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="95">
+<configurationDescriptor version="97">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
@@ -58,6 +58,19 @@
           <commandLine>-lgtools -lm</commandLine>
         </linkerTool>
       </compileType>
+      <folder path="TestFiles">
+        <cTool>
+          <incDir>
+            <pElem>../../../../../.homebrew/include</pElem>
+          </incDir>
+        </cTool>
+        <linkerTool>
+          <linkerAddLib>
+            <pElem>../../../../../.homebrew/lib</pElem>
+          </linkerAddLib>
+          <commandLine>-lgtools -lm</commandLine>
+        </linkerTool>
+      </folder>
       <item path="src/main.c" ex="false" tool="0" flavor2="0">
       </item>
     </conf>

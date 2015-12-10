@@ -20,6 +20,7 @@
 #include "gene.h"
 #include "chromosome.h"
 #include "sam.h"
+#include "reads.h"
 
 char *program_name;
 
@@ -119,68 +120,15 @@ int main(int argc, char** argv) {
     time(&later);
     if (verbose) printf("Chromosomes loaded in %.0f s\n", difftime(later, now));
 
-    time(&now);
-    if (verbose) printf("Parsing sam file\n");
+    if (verbose) printf("Parsing SAM file\n");
     SAM_f *samFactory = NewSAMFactory();
-    while (1) {
-        samFactory->parse(samFactory, stdin, max);
-        if (samFactory->sams == NULL) break;
-        total += samFactory->samsLen;
-        for (i = 0; i < samFactory->samsLen; i++) {
-            if (!(chr && strncmp(chr->name, samFactory->sams[i]->rName->rName, (strlen(chr->name) >= strlen(samFactory->sams[i]->rName->rName)) ? strlen(chr->name) : strlen(samFactory->sams[i]->rName->rName)) == 0)) {
-                chr = chrFactory->getChromosomeByName(chrFactory, samFactory->sams[i]->rName->rName);
-            }
-            if (!chr) {
-                errors++;
-                fprintf(errFile, "RNAME\t%s\tquery\t%s\n", samFactory->sams[i]->rName->rName, samFactory->sams[i]->qName);
-            } else {
-                if (samFactory->sams[i]->cigarLen == 1) {
-                    if (samFactory->sams[i]->cigar[0].code == 'M') {
-                        chrFactory->readAssignment(chr, samFactory->sams[i]->pos, samFactory->sams[i]->pos + samFactory->sams[i]->cigar[0].value - 1, &extragenic);
-                    } else {
-                        errors++;
-                        fprintf(errFile, "CIGAR\t%c\t%s\tquery\t%s\n", samFactory->sams[i]->cigar[0].code, samFactory->sams[i]->cigarStr, samFactory->sams[i]->qName);
-                    }
-                } else if (samFactory->sams[i]->cigarLen > 1) {
-                    flag = false;
-                    for (p = 0; p < samFactory->sams[i]->cigarLen; p++) {
-                        if (samFactory->sams[i]->cigar[p].code == 'N') {
-                            flag = true;
-                            break;
-                        }
-                    }
-                    if (flag) {
-                        rLen = 0;
-                        rFrom = samFactory->sams[i]->pos;
-                        for (p = 0; p < samFactory->sams[i]->cigarLen; p++) { 
-                            rLen += samFactory->sams[i]->cigar[p].value;
-                            if (samFactory->sams[i]->cigar[p].code == 'N') {
-                                chrFactory->readAssignment(chr, rFrom, rTo, &extragenic);
-                                rFrom = rTo + 1 + samFactory->sams[i]->cigar[p].value;   
-                                rLen = 0;
-                            }else{
-                                rTo = rFrom + rLen - 1;
-                            }
-                        }
-                        chrFactory->readAssignment(chr, rFrom, rTo, &extragenic);
-                    }else{
-                        chrFactory->readAssignment(chr, samFactory->sams[i]->pos, samFactory->sams[i]->pos + (int) strlen(samFactory->sams[i]->seq) - 1, &extragenic);
-                    }
-                } else {
-                    errors++;
-                    fprintf(errFile, "NOCIGAR\t%s\tquery\t%s\n", samFactory->sams[i]->cigarStr, samFactory->sams[i]->qName);
-                }
-            }
-        }
-        time(&later);
-        seconds = difftime(later, now);
-        if (verbose)printf("\tTotal reads: %10d, extragenic reads: %10d, rName errors: %5d,  elapse time: %4.0f s, %5.0f reads/s\r", total, extragenic, errors, seconds, total / seconds);
-    }
-    time(&later);
-    seconds = difftime(later, now);
-    printf("\tTotal reads: %10d, extragenic reads: %10d, rName errors: %5d,  elapse time: %4.0f s, %5.0f reads/s\n\n", total, extragenic, errors, seconds, total / seconds);
-
+    Reads_f *readsFactory = NewReadsFactory(samFactory, chrFactory, errFile);
+    readsFactory->processReadFromSAM(readsFactory, inFile, verbose);
+ 
+    if (verbose) printf("Processing GTF structure\n");
     chrFactory->calculus(chrFactory);
+    
+    if (verbose) printf("Printing results\n");
     chrFactory->print(chrFactory, outFile, entFile);
 
     FreeSAMFactory(&samFactory);
