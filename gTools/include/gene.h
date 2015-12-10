@@ -24,11 +24,11 @@ extern "C" {
         int chrEntityLen;
         int pFrom;
         int pTo;
-        double length;
-        double exonLength;
-        double exonCount;
-        double intronCount;
-        double intronLength;
+        int length;
+        int exonLength;
+        int exonCount;
+        int intronCount;
+        int intronLength;
         double TPM;
         double TPMExon;
         double TPMIntron;

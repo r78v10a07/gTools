@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="95">
+<configurationDescriptor version="97">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
@@ -10,11 +10,14 @@
       <itemPath>include/chrentity.h</itemPath>
       <itemPath>include/chromosome.h</itemPath>
       <itemPath>include/gene.h</itemPath>
+      <itemPath>include/reads.h</itemPath>
       <itemPath>include/sam.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
                    projectFiles="true">
+      <itemPath>resources/test.gtf</itemPath>
+      <itemPath>resources/test.sam</itemPath>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
@@ -26,12 +29,16 @@
       <itemPath>src/chrentity.c</itemPath>
       <itemPath>src/chromosome.c</itemPath>
       <itemPath>src/gene.c</itemPath>
+      <itemPath>src/reads.c</itemPath>
       <itemPath>src/sam.c</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
                    projectFiles="false"
                    kind="TEST_LOGICAL_FOLDER">
+      <logicalFolder name="f1" displayName="SAM Test" projectFiles="true" kind="TEST">
+        <itemPath>tests/SAMTest.c</itemPath>
+      </logicalFolder>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -81,6 +88,35 @@
                             group="bin"/>
         </packFileList>
       </packaging>
+      <folder path="TestFiles">
+        <cTool>
+          <incDir>
+            <pElem>include</pElem>
+            <pElem>../../../../../.homebrew/include</pElem>
+          </incDir>
+        </cTool>
+        <linkerTool>
+          <linkerAddLib>
+            <pElem>../../../../../.homebrew/lib</pElem>
+          </linkerAddLib>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f1">
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f1</output>
+          <linkerLibItems>
+            <linkerOptionItem>-lcunit</linkerOptionItem>
+          </linkerLibItems>
+        </linkerTool>
+      </folder>
+      <item path="include/bmemory.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/reads.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/test.gtf" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="resources/test.sam" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="src/berror.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="src/bmemory.c" ex="false" tool="0" flavor2="0">
@@ -95,7 +131,11 @@
       </item>
       <item path="src/gene.c" ex="false" tool="0" flavor2="0">
       </item>
+      <item path="src/reads.c" ex="false" tool="0" flavor2="0">
+      </item>
       <item path="src/sam.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="tests/SAMTest.c" ex="false" tool="0" flavor2="0">
       </item>
     </conf>
   </confs>

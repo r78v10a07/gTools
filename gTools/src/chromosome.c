@@ -230,7 +230,7 @@ void ChromosomePrint(void *self, FILE *outFile, FILE *entFile) {
     for (i = 0; i < ((Chromosome_f *) self)->chrArrayLen; i++) {
         for (j = 0; j < ((Chromosome_l) chrs[i])->genesLen; j++) {
             if (((Chromosome_l) chrs[i])->genesSorted[j].count != 0) {
-                fprintf(outFile, "%s\t%s\t%s\t%d\t%d\t%.4f\t%.0f\t%.0f\t%.4f\t%.0f\t%.0f\t%.4f\n",
+                fprintf(outFile, "%s\t%s\t%s\t%d\t%d\t%.4f\t%d\t%d\t%.4f\t%df\t%d\t%.4f\n",
                         ((Chromosome_l) chrs[i])->genesSorted[j].gene->geneId,
                         ((Chromosome_l) chrs[i])->genesSorted[j].gene->transcriptId,
                         ((Chromosome_l) chrs[i])->name,
@@ -246,7 +246,7 @@ void ChromosomePrint(void *self, FILE *outFile, FILE *entFile) {
 
                 for (k = 0; k < ((Chromosome_l) chrs[i])->genesSorted[j].gene->chrEntityLen; k++) {
                     ent = ((Chromosome_l) chrs[i])->genesSorted[j].gene->chrEntity[k];
-                    fprintf(entFile, "%s\t%s\t%s\t%s\t%d\t%.0f\t%.0f\t%.4f\n",
+                    fprintf(entFile, "%s\t%s\t%s\t%s\t%d\t%d\t%d\t%.4f\n",
                             ((Chromosome_l) chrs[i])->genesSorted[j].gene->geneId,
                             ((Chromosome_l) chrs[i])->genesSorted[j].gene->transcriptId,
                             ((Chromosome_l) chrs[i])->name,

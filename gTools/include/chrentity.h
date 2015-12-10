@@ -36,8 +36,8 @@ extern "C" {
     typedef struct ChrEntity_s {
         int pFrom;
         int pTo;
-        double count;
-        double length;
+        int count;
+        int length;
         EntityType_t *type;
         char **fields;
         int fieldsLen;
